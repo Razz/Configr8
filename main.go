@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func openTemplate(filePath string) (string, error) {
@@ -31,14 +32,25 @@ func test() string {
 	return "test\ntest\ntest"
 }
 
+func map_env() map[string]string {
+	env_vars := make(map[string]string)
+	for _, env := range os.Environ() {
+		sep := strings.Index(env, "=")
+		env_vars[env[0:sep]] = env[sep+1:]
+	}
+	return env_vars
+}
+
 func main() {
 	tmplLoc := "/tmp/exmaple.tmpl"
 	//tmplSrc, err := openTemplate(tmplLoc)
 	tmplSrc, err := ioutil.ReadFile(tmplLoc)
+	map_env()
 
 	tmpl := template.New("t").Funcs(template.FuncMap{
 		"times": times,
 		"test":  test,
+		"env":   map_env,
 	})
 
 	t, err := tmpl.Parse(string(tmplSrc))
@@ -50,9 +62,7 @@ func main() {
 	// var blankIface interface{}
 	// err = tmpl.ExecuteTemplate(os.Stdout, "t", blankIface)
 
-	err = t.Execute(os.Stdout, map[string]string{
-		"word": "cool",
-	})
+	err = t.Execute(os.Stdout, map_env())
 
 	if err != nil {
 		fmt.Errorf("%s", err)
