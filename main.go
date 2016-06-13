@@ -5,31 +5,19 @@ import (
 	"html/template"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
-func openTemplate(filePath string) (string, error) {
-	if _, err := os.Stat(filepath.Base(filePath)); err != nil {
-		return "", err
-	}
-
-	src, err := ioutil.ReadFile(filePath)
-	fmt.Println(string(src))
-
-	return string(src), err
-}
-
-func iterate(n int) (map[int]string, error) {
-	return nil, nil
-}
-
 func times(n int) []int {
-	return make([]int, n)
+	var sliceInt []int
+	for i := 0; i < n; i++ {
+		sliceInt = append(sliceInt, i)
+	}
+	return sliceInt
 }
 
-func test() string {
-	return "test\ntest\ntest"
+func debug() string {
+	return "Test"
 }
 
 func map_env() map[string]string {
@@ -43,13 +31,12 @@ func map_env() map[string]string {
 
 func main() {
 	tmplLoc := "/tmp/exmaple.tmpl"
-	//tmplSrc, err := openTemplate(tmplLoc)
 	tmplSrc, err := ioutil.ReadFile(tmplLoc)
 	map_env()
 
 	tmpl := template.New("t").Funcs(template.FuncMap{
 		"times": times,
-		"test":  test,
+		"debug": debug,
 		"env":   map_env,
 	})
 
@@ -59,17 +46,11 @@ func main() {
 		panic(err)
 	}
 
-	// var blankIface interface{}
-	// err = tmpl.ExecuteTemplate(os.Stdout, "t", blankIface)
-
 	err = t.Execute(os.Stdout, map_env())
 
 	if err != nil {
 		fmt.Errorf("%s", err)
 	}
-
-	// spew.Dump(tmpl)
-	// fmt.Println(tmpl)
 
 	return
 }
