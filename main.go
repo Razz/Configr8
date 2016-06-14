@@ -7,21 +7,8 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
-
-	"github.com/davecgh/go-spew/spew"
 )
 
-//Maps Variables for use in template. IE. Env : {EnvVar: EnvKey}
-
-//creates a Slice of DataMaps that will be consolidated into one big map
-//ths will it's self be returned into a datamap that looks like:
-//"Data" : { DataMap[GlobalVar] : {ScopedVar: Scoped Value}}
-//Ie. "Data": {
-//       "env":
-//         {"user": "jsmith",
-//          "shell": "ZSH",
-//         }
-//        }
 type DataMap map[string]map[string]string
 type DataMapSlice []DataMap
 type DataMapFull map[string]map[string]string
@@ -85,8 +72,6 @@ func main() {
 	t, err := tmpl.Parse(string(tmplSrc))
 
 	dataMaps := dataMapSlice.consolidate()
-	spew.Dump(dataMaps)
-
 	err = t.Execute(os.Stdout, dataMaps)
 
 	if err != nil {
