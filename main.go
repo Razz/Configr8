@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
+	"log"
 	"os"
 	"strings"
 )
@@ -50,14 +51,18 @@ func add(x int, y int) int {
 
 func main() {
 	var (
-		tmplLoc string
-		// dest         string
+		tmplLoc      string
+		dest         string
 		dataMapSlice DataMapSlice
 	)
 
-	flag.StringVar(&tmplLoc, "tmpl", "tmpl", "Location of Template to be parsed?")
-	// flag.StringVar(&dest, "dest", "dest", "Where is the parsed template going? Default: stdout")
+	flag.StringVar(&tmplLoc, "tmpl", "", "Location of Template to be parsed?")
+	flag.StringVar(&dest, "dest", "", "Where is the parsed template going? Default: stdout")
 	flag.Parse()
+
+	if tmplLoc == "" {
+		log.Fatal("No template provided")
+	}
 
 	tmplSrc, err := ioutil.ReadFile(tmplLoc)
 
@@ -70,9 +75,15 @@ func main() {
 	})
 
 	t, err := tmpl.Parse(string(tmplSrc))
+	test := "rachet honkey shit"
 
 	dataMaps := dataMapSlice.consolidate()
-	err = t.Execute(os.Stdout, dataMaps)
+	if dest == "" {
+		err = t.Execute(os.Stdout, dataMaps)
+	} else {
+		destFile, _ := os.Open(dest)
+		err = t.Execute(destFile, dataMaps)
+	}
 
 	if err != nil {
 		fmt.Errorf("%s", err)
