@@ -75,7 +75,6 @@ func main() {
 	})
 
 	t, err := tmpl.Parse(string(tmplSrc))
-	test := "rachet honkey shit"
 
 	dataMaps := dataMapSlice.consolidate()
 	if dest == "" {
