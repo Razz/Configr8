@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -30,9 +31,13 @@ func map_env() map[string]string {
 }
 
 func main() {
-	tmplLoc := "/tmp/exmaple.tmpl"
+	var (
+		tmplLoc string
+	)
+
+	flag.String(tmplLoc, "tmpl", "Location of Template to be parsed")
+	// tmplLoc := "/tmp/exmaple.tmpl"
 	tmplSrc, err := ioutil.ReadFile(tmplLoc)
-	map_env()
 
 	tmpl := template.New("t").Funcs(template.FuncMap{
 		"times": times,
