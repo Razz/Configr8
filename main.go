@@ -71,7 +71,7 @@ func main() {
 	tmpl := template.New("t").Funcs(template.FuncMap{
 		"times": times,
 		"debug": debug,
-		"add":   add,
+		"add":   plugin.add,
 	})
 
 	t, err := tmpl.Parse(string(tmplSrc))
