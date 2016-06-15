@@ -8,6 +8,8 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	"github.com/criticalstack/configr8/plugins"
 )
 
 type DataMap map[string]map[string]string
@@ -24,18 +26,6 @@ func (dm DataMapSlice) consolidate() DataMapFull {
 	return endDM
 }
 
-func times(n int) []int {
-	var sliceInt []int
-	for i := 0; i < n; i++ {
-		sliceInt = append(sliceInt, i)
-	}
-	return sliceInt
-}
-
-func debug() string {
-	return "Test"
-}
-
 func MapEnv() map[string]string {
 	dm := make(map[string]string)
 	for _, env := range os.Environ() {
@@ -43,10 +33,6 @@ func MapEnv() map[string]string {
 		dm[env[0:sep]] = env[sep+1:]
 	}
 	return dm
-}
-
-func add(x int, y int) int {
-	return x + y
 }
 
 func main() {
@@ -58,6 +44,7 @@ func main() {
 
 	flag.StringVar(&tmplLoc, "tmpl", "", "Location of Template to be parsed?")
 	flag.StringVar(&dest, "dest", "", "Where is the parsed template going? Default: stdout")
+	flag.StringVar(&tmplLoc, "-t", "", "Location of Template to be parsed?")
 	flag.Parse()
 
 	if tmplLoc == "" {
@@ -69,9 +56,10 @@ func main() {
 	dataMapSlice = append(dataMapSlice, DataMap{"env": MapEnv()})
 
 	tmpl := template.New("t").Funcs(template.FuncMap{
-		"times": times,
-		"debug": debug,
-		"add":   plugin.add,
+		"times": plugin.Times,
+		"debug": plugin.Debug,
+		"add":   plugin.Add,
+		"multi": plugin.Multi,
 	})
 
 	t, err := tmpl.Parse(string(tmplSrc))
