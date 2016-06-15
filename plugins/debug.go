@@ -1,3 +1,5 @@
 package plugin
 
-func Debug() { return "Test" }
+func Debug() string {
+	return "Test"
+}

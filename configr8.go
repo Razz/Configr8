@@ -60,6 +60,7 @@ func main() {
 		"debug": plugin.Debug,
 		"add":   plugin.Add,
 		"multi": plugin.Multi,
+		"list":  plugin.List,
 	})
 
 	t, err := tmpl.Parse(string(tmplSrc))
