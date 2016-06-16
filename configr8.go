@@ -43,8 +43,8 @@ func main() {
 	)
 
 	flag.StringVar(&tmplLoc, "tmpl", "", "Location of Template to be parsed?")
-	flag.StringVar(&dest, "dest", "", "Where is the parsed template going? Default: stdout")
 	flag.StringVar(&tmplLoc, "-t", "", "Location of Template to be parsed?")
+	flag.StringVar(&dest, "dest", "", "Where is the parsed template going? Default: stdout")
 	flag.Parse()
 
 	if tmplLoc == "" {
@@ -69,8 +69,12 @@ func main() {
 	if dest == "" {
 		err = t.Execute(os.Stdout, dataMaps)
 	} else {
-		destFile, _ := os.Open(dest)
-		err = t.Execute(destFile, dataMaps)
+		if destPath, err := os.Create(dest); err == nil {
+			err = t.Execute(destPath, dataMaps)
+			defer destPath.Close()
+		} else {
+			fmt.Errorf("%s", err, '\n')
+		}
 	}
 
 	if err != nil {
