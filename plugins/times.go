@@ -1,9 +1,10 @@
 package plugin
 
 func Times(n int) []int {
-	var sliceInt []int
-	for i := 1; i < n+1; i++ {
-		sliceInt = append(sliceInt, i)
+	n += 1
+	sliceInt := make([]int, n)
+	for i := 0; i <= len(sliceInt); i++ {
+		sliceInt[i] = i
 	}
 	return sliceInt
 }
