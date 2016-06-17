@@ -23,3 +23,6 @@ A light, dynamic config generator that utilizes commonsense extensions to Go's t
 + the ability to modify `tmpl.Delims`
 + panic handiling 
 + linting (nice to have, might be more work than worth) 
+
+
+Built by [@Razz](http://github.com/Razz)
