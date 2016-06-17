@@ -1,8 +1,8 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
-	"fmt"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -26,6 +26,14 @@ func (dm DataMapSlice) consolidate() DataMapFull {
 	return endDM
 }
 
+func checkError(err error, display string) bool {
+	if err != nil {
+		log.Fatal(display)
+		return false
+	}
+	return true
+}
+
 func MapEnv() map[string]string {
 	dm := make(map[string]string)
 	for _, env := range os.Environ() {
@@ -38,13 +46,17 @@ func MapEnv() map[string]string {
 func main() {
 	var (
 		tmplLoc      string
+		jsonLoc      string
 		dest         string
 		dataMapSlice DataMapSlice
 	)
 
 	flag.StringVar(&tmplLoc, "tmpl", "", "Location of Template to be parsed?")
-	flag.StringVar(&tmplLoc, "-t", "", "Location of Template to be parsed?")
+	flag.StringVar(&tmplLoc, "t", "", "Location of Template to be parsed?")
+	flag.StringVar(&jsonLoc, "json", "", "JSON with template data?")
+	flag.StringVar(&jsonLoc, "j", "", "JSON with template data?")
 	flag.StringVar(&dest, "dest", "", "Where is the parsed template going? Default: stdout")
+	flag.StringVar(&dest, "d", "", "Where is the parsed template going? Default: stdout")
 	flag.Parse()
 
 	if tmplLoc == "" {
@@ -52,7 +64,16 @@ func main() {
 	}
 
 	tmplSrc, err := ioutil.ReadFile(tmplLoc)
+	checkError(err, "Error reading Template file")
 
+	if jsonLoc != "" {
+		var jsonMap DataMap
+		if jsonData, err := ioutil.ReadFile(jsonLoc); checkError(err, "Error opening JSON file") {
+			if err := json.Unmarshal(jsonData, &jsonMap); checkError(err, "Check JSON formatting") {
+				dataMapSlice = append(dataMapSlice, jsonMap)
+			}
+		}
+	}
 	dataMapSlice = append(dataMapSlice, DataMap{"env": MapEnv()})
 
 	tmpl := template.New("t").Funcs(template.FuncMap{
@@ -64,20 +85,15 @@ func main() {
 	})
 
 	t, err := tmpl.Parse(string(tmplSrc))
+	checkError(err, "Error Parsing Template. Please check syantax and try again")
 
 	dataMaps := dataMapSlice.consolidate()
 	if dest == "" {
 		err = t.Execute(os.Stdout, dataMaps)
 	} else {
-		if destPath, err := os.Create(dest); err == nil {
+		if destPath, err := os.Create(dest); checkError(err, "Error creating config file") {
 			err = t.Execute(destPath, dataMaps)
 			defer destPath.Close()
-		} else {
-			fmt.Errorf("%s", err, '\n')
 		}
-	}
-
-	if err != nil {
-		fmt.Errorf("%s", err)
 	}
 }
