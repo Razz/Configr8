@@ -12,3 +12,10 @@ A light, dynamic config generator that utilizes commonsense extensions to Go's t
 - recomplie
 - include in template 
 
+
+#### To-do
++ the ability to modify `tmpl.Delims`
++ reflect json into `DataMap` for use in a template 
++ panic handiling 
++ error handling
++ linting (nice to have, might be more work than worth) 
