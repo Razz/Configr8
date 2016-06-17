@@ -4,7 +4,9 @@ A light, dynamic config generator that utilizes commonsense extensions to Go's t
 ## Use
 `configr8 -t =/tmp/nginx.tmpl -d /etc/nginx.conf`
 `-j or -json: Supply a json file`
+
 `-t or -tmpl: Template File`
+
 `-d or -dest: Destination File, defaults to Stdout`
 
 ## Plugins
