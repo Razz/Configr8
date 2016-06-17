@@ -12,12 +12,19 @@ import (
 	"github.com/criticalstack/configr8/plugins"
 )
 
+// DataMap as a struct exists to help map context and user supplied data into
+// the templating interface. Creating DataMapSlice allows us to extend functions
+// to it.
+
 type DataMap map[string]map[string]string
 type DataMapSlice []DataMap
-type DataMapFull map[string]map[string]string
 
-func (dm DataMapSlice) consolidate() DataMapFull {
-	endDM := make(DataMapFull)
+// Take a bunch of DataMaps, and turn them into one. This func may be expensive,
+// but it makes for a really userfriendly way to call supplied vaiables in the
+// templates
+
+func (dm DataMapSlice) consolidate() DataMap {
+	endDM := make(DataMap)
 	for _, i := range dm {
 		for k, v := range i {
 			endDM[k] = v
@@ -26,6 +33,9 @@ func (dm DataMapSlice) consolidate() DataMapFull {
 	return endDM
 }
 
+// There are a lot of potential errors, this allows us to not have to right the
+// if then else error checking that is so common.
+
 func checkError(err error, display string) bool {
 	if err != nil {
 		log.Fatal(display)
@@ -33,6 +43,8 @@ func checkError(err error, display string) bool {
 	}
 	return true
 }
+
+// Maps env variables for use later.
 
 func MapEnv() map[string]string {
 	dm := make(map[string]string)
@@ -60,6 +72,9 @@ func main() {
 	flag.Parse()
 
 	if tmplLoc == "" {
+		// We fatal on this because if there is no teplate, whats the point.
+		// Might be worth expanding to take form Stdin
+
 		log.Fatal("No template provided")
 	}
 
@@ -74,15 +89,21 @@ func main() {
 			}
 		}
 	}
+	// Example of DataMap for env-context
 	dataMapSlice = append(dataMapSlice, DataMap{"env": MapEnv()})
 
-	tmpl := template.New("t").Funcs(template.FuncMap{
+	// Plugins are the true stregth of configr8. This will grow as plugins are
+	// added
+
+	pluginMap := template.FuncMap{
 		"times": plugin.Times,
 		"debug": plugin.Debug,
 		"add":   plugin.Add,
 		"multi": plugin.Multi,
 		"list":  plugin.List,
-	})
+	}
+
+	tmpl := template.New("t").Funcs(pluginMap)
 
 	t, err := tmpl.Parse(string(tmplSrc))
 	checkError(err, "Error Parsing Template. Please check syantax and try again")
