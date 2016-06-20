@@ -38,7 +38,7 @@ func (dm DataMapSlice) consolidate() DataMap {
 
 func checkError(err error, display string) bool {
 	if err != nil {
-		log.Fatal(display)
+		log.Fatal("%s::\n\t%s\n", err, display)
 		return false
 	}
 	return true
@@ -92,7 +92,7 @@ func main() {
 	// Example of DataMap for env-context
 	dataMapSlice = append(dataMapSlice, DataMap{"env": MapEnv()})
 
-	// Plugins are the true stregth of configr8. This will grow as plugins are
+	// Plugins are the true strngth of configr8. This will grow as plugins are
 	// added
 
 	pluginMap := template.FuncMap{
@@ -111,9 +111,11 @@ func main() {
 	dataMaps := dataMapSlice.consolidate()
 	if dest == "" {
 		err = t.Execute(os.Stdout, dataMaps)
+		checkError(err, "Error Parsing Template. Please check syantax and try again")
 	} else {
 		if destPath, err := os.Create(dest); checkError(err, "Error creating config file") {
 			err = t.Execute(destPath, dataMaps)
+			checkError(err, "Error Parsing Template. Please check syantax and try again")
 			defer destPath.Close()
 		}
 	}
