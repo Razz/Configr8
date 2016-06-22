@@ -1,4 +1,4 @@
 {{$test := .env}}
 {{ range $i := times 10}}
-  {{$test.EXAMPLE}} {{add $i 1}}
+  {{$i}}) {{$test.USER}} ? {{$.user1.first}}.{{$.user1.last}}
 {{end}}

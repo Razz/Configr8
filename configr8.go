@@ -38,7 +38,7 @@ func (dm DataMapSlice) consolidate() DataMap {
 
 func checkError(err error, display string) bool {
 	if err != nil {
-		log.Fatal("%s::\n\t%s\n", err, display)
+		log.Fatalf("%s::\n\t%s\n", err, display)
 		return false
 	}
 	return true
