@@ -19,10 +19,8 @@ A light, dynamic config generator that utilizes commonsense extensions to Go's t
 - include in template 
 
 
-#### To-do
-+ the ability to modify `tmpl.Delims`
-+ panic handiling 
-+ linting (nice to have, might be more work than worth) 
-
+## Example 
+You could run the template with or without the added json information.
+`configr8 -t example.tmpl` or `configr8 -t example.tmpl -j example.json`
 
 Built by [@Razz](http://github.com/Razz)
