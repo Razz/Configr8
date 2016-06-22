@@ -38,7 +38,7 @@ func (dm DataMapSlice) consolidate() DataMap {
 
 func checkError(err error, display string) bool {
 	if err != nil {
-		log.Fatalf("%s::\n\t%s\n", err, display)
+		log.Fatalf("\n---------------\n%s::\n\t%s\n---------------\n", err, display)
 		return false
 	}
 	return true
@@ -96,8 +96,8 @@ func main() {
 	// added
 
 	pluginMap := template.FuncMap{
-		"times": plugin.Times,
 		"debug": plugin.Debug,
+		"times": plugin.Times,
 		"add":   plugin.Add,
 		"multi": plugin.Multi,
 		"list":  plugin.List,
