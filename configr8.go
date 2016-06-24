@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -38,7 +39,8 @@ func (dm DataMapSlice) consolidate() DataMap {
 
 func checkError(err error, display string) bool {
 	if err != nil {
-		log.Fatalf("\n---------------\n%s::\n\t%s\n---------------\n", err, display)
+		fmt.Printf("\n---------------\n%s::\n\t%s\n---------------\n", err, display)
+		os.Exit(1)
 		return false
 	}
 	return true
