@@ -9,29 +9,27 @@ import (
 	"log"
 	"os"
 	"strings"
-
-	"github.com/criticalstack/configr8/plugins"
 )
 
-// DataMap as a struct exists to help map context and user supplied data into
-// the templating interface. Creating DataMapSlice allows us to extend functions
+// dataMap as a struct exists to help map context and user supplied data into
+// the templating interface. Creating dataMapSlice allows us to extend functions
 // to it.
 
-type DataMap map[string]map[string]string
-type DataMapSlice []DataMap
+type dataMap map[string]map[string]string
+type dataMapSlice []dataMap
 
-// Take a bunch of DataMaps, and turn them into one. This func may be expensive,
+// Take a bunch of dataMaps, and turn them into one. This func may be expensive,
 // but it makes for a really userfriendly way to call supplied vaiables in the
 // templates
 
-func (dm DataMapSlice) consolidate() DataMap {
-	endDM := make(DataMap)
-	for _, i := range dm {
+func (dm *dataMapSlice) consolidate() *dataMap {
+	endDM := make(dataMap)
+	for _, i := range *dm {
 		for k, v := range i {
 			endDM[k] = v
 		}
 	}
-	return endDM
+	return &endDM
 }
 
 // There are a lot of potential errors, this allows us to not have to right the
@@ -48,7 +46,7 @@ func checkError(err error, display string) bool {
 
 // Maps env variables for use later.
 
-func MapEnv() map[string]string {
+func mapEnv() map[string]string {
 	dm := make(map[string]string)
 	for _, env := range os.Environ() {
 		sep := strings.Index(env, "=")
@@ -62,7 +60,7 @@ func main() {
 		tmplLoc      string
 		jsonLoc      string
 		dest         string
-		dataMapSlice DataMapSlice
+		dataMapSlice dataMapSlice
 	)
 
 	flag.StringVar(&tmplLoc, "tmpl", "", "Location of Template to be parsed?")
@@ -84,15 +82,15 @@ func main() {
 	checkError(err, "Error reading Template file")
 
 	if jsonLoc != "" {
-		var jsonMap DataMap
+		var jsonMap dataMap
 		if jsonData, err := ioutil.ReadFile(jsonLoc); checkError(err, "Error opening JSON file") {
 			if err := json.Unmarshal(jsonData, &jsonMap); checkError(err, "Check JSON formatting") {
 				dataMapSlice = append(dataMapSlice, jsonMap)
 			}
 		}
 	}
-	// Example of DataMap for env-context
-	dataMapSlice = append(dataMapSlice, DataMap{"env": MapEnv()})
+	// Example of dataMap for env-context
+	dataMapSlice = append(dataMapSlice, dataMap{"env": mapEnv()})
 
 	// Plugins are the true strngth of configr8. This will grow as plugins are
 	// added
