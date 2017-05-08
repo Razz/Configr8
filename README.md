@@ -1,3 +1,4 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/razz/configr8)](https://goreportcard.com/report/github.com/razz/configr8)
 # Configr8
 A light, dynamic config generator that utilizes commonsense extensions to Go's templating libary.
 
