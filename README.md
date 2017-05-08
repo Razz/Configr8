@@ -1,4 +1,4 @@
-# configr8
+# Configr8
 A light, dynamic config generator that utilizes commonsense extensions to Go's templating libary.
 
 ## Use
